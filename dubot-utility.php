@@ -49,10 +49,12 @@
 		}
 		
 		public static function init() {
+			global $ini;
+			
 			if(self::$ch == null) {
 				self::$ch = curl_init();
-				curl_setopt(self::$ch, CURLOPT_COOKIEJAR, "cookies");
-				curl_setopt(self::$ch, CURLOPT_COOKIEFILE, "cookies");
+				curl_setopt(self::$ch, CURLOPT_COOKIEJAR, $ini["cookie_storage"]);
+				curl_setopt(self::$ch, CURLOPT_COOKIEFILE, $ini["cookie_storage"]);
 			}
 				
 			return self::$ch;
