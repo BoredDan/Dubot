@@ -1,12 +1,6 @@
 <?php
-	$url="https://api.dubtrack.fm";
-	$roomuri = "boreddan-test";
-	$getroom = "/room/" . $roomuri;
-	echo $url . $getroom;
-	
-	$ch = curl_init($url.$getroom);
-	
-	curl_exec($ch);
-	
-	curl_close($ch);
+	$ini = array_merge(
+		parse_ini_file("dubot.ini"),
+		parse_ini_file("dubot-user.ini")
+	);
 ?>

@@ -1,3 +1,3 @@
 <?php
-	require("dubot-utility");
+	require("dubot-utility.php");
 ?>
