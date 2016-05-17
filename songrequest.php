@@ -1,6 +1,5 @@
 <?php
 	require("dubot-utility.php");
-	HTTP::init();
-	echo roomId($ini["room"]);
-	HTTP::close();
+	echo print_r(init())."<br>";
+	close();
 ?>

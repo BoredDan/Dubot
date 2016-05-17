@@ -32,6 +32,10 @@
 			return $url;
 		}
 		
+		public static function setPostData($postfields) {
+			curl_setopt(self::$ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
+		}
+		
 		public static function post() {
 			curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt(self::$ch, CURLOPT_POST, true);
@@ -45,8 +49,11 @@
 		}
 		
 		public static function init() {
-			if(self::$ch == null)
+			if(self::$ch == null) {
 				self::$ch = curl_init();
+				curl_setopt(self::$ch, CURLOPT_COOKIEJAR, "cookies");
+				curl_setopt(self::$ch, CURLOPT_COOKIEFILE, "cookies");
+			}
 				
 			return self::$ch;
 		}
@@ -58,6 +65,42 @@
 		public static function close() {
 			curl_close(self::$ch);
 		}
+	}
+	
+	//Login and authorization functions
+	function login() {
+		global $ini;
+		
+		HTTP::init();
+		HTTP::setURL("login");
+		HTTP::setPostData(array("username" => $ini["bot_uname"], "password" => $ini["bot_password"]));
+		
+		return HTTP::post();
+	}
+	
+	function sessionInfo() {
+		global $ini;
+		
+		HTTP::init();
+		HTTP::setURL("session");
+		
+		return HTTP::get();
+	}
+	
+	function init() {
+		global $ini;
+		
+		HTTP::init();
+		
+		$sessionJSON = json_decode(sessionInfo(), true);
+		if($sessionJSON)
+			return $sessionJSON;
+		else
+			return json_decode(login(), true);
+	}
+	
+	function close() {
+		HTTP::close();
 	}
 	
 	//Room functions
