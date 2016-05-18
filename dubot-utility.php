@@ -133,4 +133,8 @@
 		
 		return HTTP::post();
 	}
+	
+	function stupidLog($stupid) {
+		echo print_r($stupid)."<br><br>";
+	}
 ?>
