@@ -108,24 +108,29 @@
 	//Room functions
 	
 	function roomDetails($room) {
-		global $ini;
-		
 		HTTP::init();
 		HTTP::setURL("roomDetails", array(":id" => $room));
 		
-		$json = json_decode(HTTP::get(), true);
-		
-		return $json;
+		return json_decode(HTTP::get(), true);
 	}
 	
 	function roomId($room) {
-		static $id = null;
+		static $ids = array();
 	
-		if($id == null) {
+		if(!array_key_exists($room, $ids)) {
 			$json = roomDetails($room);
-			$id = $json['data']['_id'];
+			$ids[$room] = $json['data']['_id'];
 		}
 		
-		return $id;
+		return $ids[$room];
+	}
+	
+	function joinRoom($room) {
+		$id = roomId($room);
+		
+		HTTP::init();
+		echo HTTP::setURL("roomUsers", array(":id" => $id))."<br>";
+		
+		return HTTP::post();
 	}
 ?>
