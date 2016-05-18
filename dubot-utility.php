@@ -158,4 +158,8 @@
 		print_r($stupid);
 		echo "<br><br>";
 	}
+	
+	function stupidLogPrettyJson($stupid) {
+		stupidLog("<pre>".json_encode($stupid, JSON_PRETTY_PRINT)."</pre>");
+	}
 ?>
