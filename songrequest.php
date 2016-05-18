@@ -1,6 +1,12 @@
 <?php
 	require("dubot-utility.php");
-	stupidLog(init());
-	stupidLog(queueSong($ini["roomName"], "vIbcqgXh5-4", "youtube"));
+	
+	init();
+	$queue = queueSong($ini["roomName"], $_GET["song"], "youtube");
+	if($queue["code"] == 200) {
+		echo "Queued ".$_GET["song"]."!";
+	} else {
+		echo "Failed to queue requested song!";
+	}
 	close();
 ?>

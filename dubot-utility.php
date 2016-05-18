@@ -77,7 +77,7 @@
 		HTTP::setURL("login");
 		HTTP::setPostData(array("username" => $ini["username"], "password" => $ini["password"]));
 		
-		return HTTP::post();
+		return json_decode(HTTP::post(), true);
 	}
 	
 	function sessionInfo() {
@@ -86,7 +86,7 @@
 		HTTP::init();
 		HTTP::setURL("session");
 		
-		return HTTP::get();
+		return json_decode(HTTP::get(), true);
 	}
 	
 	function init() {
@@ -94,11 +94,11 @@
 		
 		HTTP::init();
 		
-		$sessionJSON = json_decode(sessionInfo(), true);
+		$sessionJSON = sessionInfo();
 		if($sessionJSON)
 			return $sessionJSON;
 		else
-			return json_decode(login(), true);
+			return login();
 	}
 	
 	function close() {
@@ -131,7 +131,7 @@
 		
 		HTTP::setURL("roomUsers", array(":id" => roomId($room)));
 		
-		return HTTP::post();
+		return json_decode(HTTP::post(), true);
 	}
 	
 	function queueSong($room, $song, $type) {
@@ -143,10 +143,11 @@
 		HTTP::setPostData(array("songId" => $song, "songType" => $type));
 		
 		
-		return HTTP::post();
+		return json_decode(HTTP::post(), true);
 	}
 	
 	function stupidLog($stupid) {
-		echo print_r($stupid)."<br><br>";
+		print_r($stupid);
+		echo "<br><br>";
 	}
 ?>
