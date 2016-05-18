@@ -146,6 +146,14 @@
 		return json_decode(HTTP::post(), true);
 	}
 	
+	function songDetails($songid) {
+		HTTP::init();
+		
+		HTTP::setURL("songDetails", array(":id" => $songid));
+		
+		return json_decode(HTTP::get(), true);
+	}
+	
 	function stupidLog($stupid) {
 		print_r($stupid);
 		echo "<br><br>";
