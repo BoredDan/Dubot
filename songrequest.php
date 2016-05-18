@@ -1,6 +1,6 @@
 <?php
 	require("dubot-utility.php");
-	echo print_r(init())."<br>";
-	echo joinRoom($ini["roomName"])."<br>";
+	stupidLog(init());
+	stupidLog(queueSong($ini["roomName"], "vIbcqgXh5-4", "youtube"));
 	close();
 ?>

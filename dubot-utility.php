@@ -109,6 +109,7 @@
 	
 	function roomDetails($room) {
 		HTTP::init();
+		
 		HTTP::setURL("roomDetails", array(":id" => $room));
 		
 		return json_decode(HTTP::get(), true);
@@ -126,10 +127,21 @@
 	}
 	
 	function joinRoom($room) {
-		$id = roomId($room);
-		
 		HTTP::init();
-		echo HTTP::setURL("roomUsers", array(":id" => $id))."<br>";
+		
+		HTTP::setURL("roomUsers", array(":id" => roomId($room)));
+		
+		return HTTP::post();
+	}
+	
+	function queueSong($room, $song, $type) {
+		joinRoom($room);
+	
+		HTTP::init();
+		
+		HTTP::setURL("roomQueue", array(":id" => roomId($room)));
+		HTTP::setPostData(array("songId" => $song, "songType" => $type));
+		
 		
 		return HTTP::post();
 	}
