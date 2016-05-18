@@ -2,16 +2,34 @@
 	require("dubot-utility.php");
 	
 	init();
-	$queue = queueSong($ini["roomName"], $_GET["song"], "youtube");
-	if($queue["code"] == 200) {
-		$details = songDetails($queue["data"]["songid"]);
-		if($details["code"] == 200) {
-			echo "Queued \"".$details["data"]["name"]."\"!";
-		} else {
-			echo "Queued ".$_GET["song"]."!";
-		}
-	} else {
-		echo "Failed to queue requested song!";
-	}
+	echo songRequest($_GET["song"]);
 	close();
+	
+	function songRequest($song) {
+		Global $ini;
+		
+		//Look for requested song
+		$search = songSearch($_GET["song"], $ini["searchType"]);
+		if($search["code"] == 200) {
+			if(empty($search["data"])) {
+				return "Could not find \"".$_GET["song"]."\" on ".$ini["searchType"]."!";
+			} else {
+				$fkid = $search["data"][0]["fkid"];
+			}
+		} else {
+			return "Failed during search for \"".$_GET["song"]."\"!";
+		}
+		
+		$queue = queueSong($ini["roomName"], $fkid, $ini["searchType"]);
+		if($queue["code"] == 200) {
+			$details = songDetails($queue["data"]["songid"]);
+			if($details["code"] == 200) {
+				return "Queued \"".$details["data"]["name"]."\"!";
+			} else {
+				return "Queued \"".$_GET["song"]."\"!";
+			}
+		} else {
+				return "Failed to queue \"".$_GET["song"]."\"!";
+		}
+	}
 ?>

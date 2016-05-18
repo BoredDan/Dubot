@@ -11,7 +11,7 @@
 		private function __construct() {}
 		private static $ch = null;
 		
-		public static function getURL($command, $inline_ids = array()) {
+		public static function getURL($command, $inline_ids = array(), $args = array()) {
 			global $ini;
 			
 			$url = $ini["url"].$ini[$command];
@@ -21,11 +21,14 @@
 			
 			$url = str_replace($search, $replace, $url);
 			
+			if(!empty($args))
+				$url .= "?".http_build_query($args);
+			
 			return $url;
 		}
 		
-		public static function setURL($command, $inline_ids = array()) {
-			$url = self::getURL($command, $inline_ids);
+		public static function setURL($command, $inline_ids = array(), $args = array()) {
+			$url = self::getURL($command, $inline_ids, $args);
 			
 			curl_setopt(self::$ch, CURLOPT_URL, $url);
 			
@@ -150,6 +153,14 @@
 		HTTP::init();
 		
 		HTTP::setURL("songDetails", array(":id" => $songid));
+		
+		return json_decode(HTTP::get(), true);
+	}
+	
+	function songSearch($song, $type) {
+		HTTP::init();
+		
+		HTTP::setURL("song", array(), array("name" => $song, "type" => $type));
 		
 		return json_decode(HTTP::get(), true);
 	}
