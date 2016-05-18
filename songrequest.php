@@ -14,7 +14,7 @@
 			if(empty($search["data"])) {
 				return "Could not find \"".$_GET["song"]."\" on ".$ini["searchType"]."!";
 			} else {
-				$fkid = $search["data"][0]["fkid"];
+				$fkid = songSearchFilter($search, $_GET["song"], $ini["searchType"])["fkid"];
 			}
 		} else {
 			return "Failed during search for \"".$_GET["song"]."\"!";

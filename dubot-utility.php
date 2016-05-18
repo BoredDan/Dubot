@@ -165,6 +165,34 @@
 		return json_decode(HTTP::get(), true);
 	}
 	
+	function songSearchFilter($results, $searched, $type) {
+		$songs = $results['data'];
+		foreach($songs as $song) {
+			if($song["fkid"]==$searched){
+				return $song;
+			}
+		}
+		
+		switch($type) {
+			case "youtube":
+				foreach($songs as $song) {
+					if(preg_match("/".$song["fkid"]."$/", $searched)) {
+						return $song;
+					}
+				}
+				break;
+			case "soundcloud":
+				foreach($songs as $song) {
+					if($song["permalinkUrl"] == $searched || $song["streamUrl"] == $searched){
+						return $song;
+					}
+				}
+				break;
+		}
+		
+		return $songs[0];
+	}
+	
 	function stupidLog($stupid) {
 		print_r($stupid);
 		echo "<br><br>";
