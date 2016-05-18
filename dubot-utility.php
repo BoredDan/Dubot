@@ -14,9 +14,9 @@
 		public static function getURL($command, $inline_ids = array()) {
 			global $ini;
 			
-			$url = $ini["api_url"].$ini["api_".$command];
+			$url = $ini["url"].$ini[$command];
 			
-			$search = array_map(function($key){ return "{".$key."}"; }, array_keys($inline_ids));
+			$search = array_keys($inline_ids);
 			$replace = array_values($inline_ids);
 			
 			$url = str_replace($search, $replace, $url);
@@ -75,7 +75,7 @@
 		
 		HTTP::init();
 		HTTP::setURL("login");
-		HTTP::setPostData(array("username" => $ini["bot_uname"], "password" => $ini["bot_password"]));
+		HTTP::setPostData(array("username" => $ini["username"], "password" => $ini["password"]));
 		
 		return HTTP::post();
 	}
@@ -111,7 +111,7 @@
 		global $ini;
 		
 		HTTP::init();
-		HTTP::setURL("room_details", array("room" => $room));
+		HTTP::setURL("roomDetails", array(":id" => $room));
 		
 		$json = json_decode(HTTP::get(), true);
 		
