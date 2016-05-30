@@ -10,11 +10,26 @@
 	class HTTP {
 		private function __construct() {}
 		private static $ch = null;
+		private static $apiSection = "";
+		
+		public static function setAPI($api) {
+			switch($api) {
+				case "dubtrack":
+					self::$apiSection = "Dubtrack.API";
+					break;
+				case "youtube":
+					self::$apiSection = "Youtube.API";
+					break;
+				default:
+					self::$apiSection = $api;
+					break;
+			}
+		}
 		
 		public static function getURL($command, $inline_ids = array(), $args = array()) {
 			global $ini;
 			
-			$url = $ini["Dubtrack.API"]["url"].$ini["Dubtrack.API"][$command];
+			$url = $ini[self::$apiSection]["url"].$ini[self::$apiSection][$command];
 			
 			$search = array_keys($inline_ids);
 			$replace = array_values($inline_ids);
@@ -51,13 +66,17 @@
 			return curl_exec(self::$ch);
 		}
 		
-		public static function init() {
+		public static function init($api = null) {
 			global $ini;
 			
 			if(self::$ch == null) {
 				self::$ch = curl_init();
 				curl_setopt(self::$ch, CURLOPT_COOKIEJAR, $ini["Cookies"]["cookie_storage"]);
 				curl_setopt(self::$ch, CURLOPT_COOKIEFILE, $ini["Cookies"]["cookie_storage"]);
+			}
+			
+			if($api) {
+				self::setAPI($api);
 			}
 				
 			return self::$ch;
@@ -76,7 +95,7 @@
 	function login() {
 		global $ini;
 		
-		HTTP::init();
+		HTTP::init("dubtrack");
 		HTTP::setURL("login");
 		HTTP::setPostData(array("username" => $ini["Dubtrack.User"]["username"], "password" => $ini["Dubtrack.User"]["password"]));
 		
@@ -86,7 +105,7 @@
 	function sessionInfo() {
 		global $ini;
 		
-		HTTP::init();
+		HTTP::init("dubtrack");
 		HTTP::setURL("session");
 		
 		return json_decode(HTTP::get(), true);
@@ -95,7 +114,7 @@
 	function init() {
 		global $ini;
 		
-		HTTP::init();
+		HTTP::init("dubtrack");
 		
 		$sessionJSON = sessionInfo();
 		if($sessionJSON)
@@ -111,7 +130,7 @@
 	//Room functions
 	
 	function roomDetails($room) {
-		HTTP::init();
+		HTTP::init("dubtrack");
 		
 		HTTP::setURL("roomDetails", array(":id" => $room));
 		
@@ -130,7 +149,7 @@
 	}
 	
 	function joinRoom($room) {
-		HTTP::init();
+		HTTP::init("dubtrack");
 		
 		HTTP::setURL("roomUsers", array(":id" => roomId($room)));
 		
@@ -140,7 +159,7 @@
 	function queueSong($room, $song, $type) {
 		joinRoom($room);
 	
-		HTTP::init();
+		HTTP::init("dubtrack");
 		
 		HTTP::setURL("roomQueue", array(":id" => roomId($room)));
 		HTTP::setPostData(array("songId" => $song, "songType" => $type));
@@ -150,7 +169,7 @@
 	}
 	
 	function songDetails($songid) {
-		HTTP::init();
+		HTTP::init("dubtrack");
 		
 		HTTP::setURL("songDetails", array(":id" => $songid));
 		
@@ -158,7 +177,7 @@
 	}
 	
 	function songSearch($song, $type) {
-		HTTP::init();
+		HTTP::init("dubtrack");
 		
 		HTTP::setURL("song", array(), array("name" => $song, "type" => $type));
 		
