@@ -1,8 +1,8 @@
 <?php
 	//Loads configuration settings
 	$ini = array_merge(
-		parse_ini_file("dubot.ini"),
-		parse_ini_file("dubot-user.ini")
+		parse_ini_file("dubot.ini", true),
+		parse_ini_file("dubot-user.ini", true)
 	);
 	
 	//HTTP
@@ -14,7 +14,7 @@
 		public static function getURL($command, $inline_ids = array(), $args = array()) {
 			global $ini;
 			
-			$url = $ini["url"].$ini[$command];
+			$url = $ini["Dubtrack.API"]["url"].$ini["Dubtrack.API"][$command];
 			
 			$search = array_keys($inline_ids);
 			$replace = array_values($inline_ids);
@@ -56,8 +56,8 @@
 			
 			if(self::$ch == null) {
 				self::$ch = curl_init();
-				curl_setopt(self::$ch, CURLOPT_COOKIEJAR, $ini["cookie_storage"]);
-				curl_setopt(self::$ch, CURLOPT_COOKIEFILE, $ini["cookie_storage"]);
+				curl_setopt(self::$ch, CURLOPT_COOKIEJAR, $ini["Cookies"]["cookie_storage"]);
+				curl_setopt(self::$ch, CURLOPT_COOKIEFILE, $ini["Cookies"]["cookie_storage"]);
 			}
 				
 			return self::$ch;
@@ -78,7 +78,7 @@
 		
 		HTTP::init();
 		HTTP::setURL("login");
-		HTTP::setPostData(array("username" => $ini["username"], "password" => $ini["password"]));
+		HTTP::setPostData(array("username" => $ini["Dubtrack.User"]["username"], "password" => $ini["Dubtrack.User"]["password"]));
 		
 		return json_decode(HTTP::post(), true);
 	}
