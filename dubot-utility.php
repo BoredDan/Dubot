@@ -1,6 +1,6 @@
 <?php
 	//Loads configuration settings
-	$ini = array_merge(
+	$ini = array_merge_recursive(
 		parse_ini_file("dubot.ini", true),
 		parse_ini_file("dubot-user.ini", true)
 	);
@@ -36,6 +36,12 @@
 			
 			$url = str_replace($search, $replace, $url);
 			
+			if(is_array($ini[self::$apiSection][$command."Args"]))
+				$args = array_merge($ini[self::$apiSection][$command."Args"], $args);
+			
+			if(is_array($ini[self::$apiSection]["globalArgs"]))
+				$args = array_merge($args, $ini[self::$apiSection]["globalArgs"]);
+			
 			if(!empty($args))
 				$url .= "?".http_build_query($args);
 			
@@ -44,7 +50,6 @@
 		
 		public static function setURL($command, $inline_ids = array(), $args = array()) {
 			$url = self::getURL($command, $inline_ids, $args);
-			
 			curl_setopt(self::$ch, CURLOPT_URL, $url);
 			
 			return $url;
@@ -168,10 +173,20 @@
 		return json_decode(HTTP::post(), true);
 	}
 	
-	function songDetails($songid) {
-		HTTP::init("dubtrack");
+	function songDetails($songid, $api = "dubtrack") {
+		HTTP::init($api);
 		
-		HTTP::setURL("songDetails", array(":id" => $songid));
+		switch($api) {
+			case "dubtrack":
+				HTTP::setURL("songDetails", array(":id" => $songid));
+				break;
+			case "youtube":
+				HTTP::setURL("songDetails", array(), array("id" => $songid));
+				break;
+			default:
+				HTTP::setURL("songDetails");
+				break;
+		}
 		
 		return json_decode(HTTP::get(), true);
 	}
