@@ -14,7 +14,7 @@
 			if(empty($search["data"])) {
 				return "Could not find \"".$_GET["song"]."\" on ".$ini["Dubtrack"]["searchType"]."!";
 			} else {
-				$fkid = songSearchFilter($search, $_GET["song"], $ini["Dubtrack"]["searchType"])["fkid"];
+				$fkid = songSearchFilter($search["data"], $_GET["song"], $ini["Dubtrack"]["searchType"])["fkid"];
 			}
 		} else {
 			return "Failed during search for \"".$_GET["song"]."\"!";

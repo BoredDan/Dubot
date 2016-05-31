@@ -199,14 +199,16 @@
 		return json_decode(HTTP::get(), true);
 	}
 	
-	function songSearchFilter($results, $searched, $type) {
-		$songs = $results['data'];
+	function songSearchFilterFkid($songs, $searched) {
 		foreach($songs as $song) {
 			if($song["fkid"]==$searched){
 				return $song;
 			}
 		}
-		
+		return null;
+	}
+	
+	function songSearchFilterURL($songs, $searched, $type) {
 		switch($type) {
 			case "youtube":
 				foreach($songs as $song) {
@@ -223,6 +225,21 @@
 				}
 				break;
 		}
+		return null;
+	}
+	
+	function songSearchFilterExact($songs, $searched) {
+		return array_values(array_filter($songs, function($song) use ($searched) { return strcasecmp($song["name"], $searched) == 0; }));
+	}
+	
+	function songSearchFilter($songs, $searched, $type) {
+		$filteredSong = songSearchFilterFkid($songs, $searched);
+		if($filteredSong)
+			return $filteredSong;
+			
+		$filteredSong = songSearchFilterUrl($songs, $searched, type);
+		if($filteredSong)
+			return $filteredSong;
 		
 		return $songs[0];
 	}
