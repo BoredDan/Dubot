@@ -248,7 +248,7 @@
 		return $songs[0];
 	}
 	
-	function songSearchFilterExact($songs, $searched, $case_sensitive = false) {
+	function songSearchFilterExact($songs, $searched, $case_sensitive = true) {
 		return array_values(array_filter($songs, function($song) use ($searched, $case_sensitive) {
 			if($case_sensitive) {
 				return strcmp(trim($song["name"]), trim($searched)) == 0; 
@@ -256,6 +256,24 @@
 				return strcasecmp(trim($song["name"]), trim($searched)) == 0; 
 			}
 		}));
+	}
+	
+	function songSearchFilterIExact($songs, $searched) {
+		return songSearchFilterExact($songs, $searched, false);
+	}
+	
+	function songSearchFilterStartsWith($songs, $searched, $case_sensitive = true) {
+		return array_values(array_filter($songs, function($song) use ($searched, $case_sensitive) {
+			if($case_sensitive) {
+				return strpos(trim($song["name"]), trim($searched)) === 0; 
+			} else {
+				return stripos(trim($song["name"]), trim($searched)) === 0;  
+			}
+		}));
+	}
+	
+	function songSearchFilterIStartsWith($songs, $searched) {
+		return songSearchFilterStartsWith($songs, $searched, false);
 	}
 	
 	function songSearchFilter($songs, $searched, $type) {
@@ -267,17 +285,31 @@
 		if($filteredSong)
 			return $filteredSong;
 		
-		$filteredSongs = songSearchFilterExact($songs, $searched, true);
+		$filteredSongs = songSearchFilterExact($songs, $searched);
 		if(count($filteredSongs) == 1) {
 			return $filteredSongs[0];
 		} else if(count($filteredSongs) > 1) {
 			$songs = $filteredSongs;
 		} else {
-			$filteredSongs = songSearchFilterExact($songs, $searched, false);
+			$filteredSongs = songSearchFilterIExact($songs, $searched);
 			if(count($filteredSongs) == 1) {
 				return $filteredSongs[0];
 			} else if(count($filteredSongs) > 1) {
 				$songs = $filteredSongs;
+			} else {
+				$filteredSongs = songSearchFilterStartsWith($songs, $searched);
+				if(count($filteredSongs) == 1) {
+					return $filteredSongs[0];
+				} else if(count($filteredSongs) > 1) {
+					$songs = $filteredSongs;
+				} else {
+					$filteredSongs = songSearchFilterIStartsWith($songs, $searched);
+					if(count($filteredSongs) == 1) {
+						return $filteredSongs[0];
+					} else if(count($filteredSongs) > 1) {
+						$songs = $filteredSongs;
+					}
+				}
 			}
 		}
 		
