@@ -241,6 +241,13 @@
 		if($filteredSong)
 			return $filteredSong;
 		
+		$filteredSongs = songSearchFilterExact($songs, $searched);
+		if(count($filteredSongs) == 1) {
+			return $filteredSongs[0];
+		} else if(count($filteredSongs) > 1) {
+			$songs = $filteredSongs;
+		}
+		
 		return $songs[0];
 	}
 	
