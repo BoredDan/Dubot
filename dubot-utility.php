@@ -276,6 +276,20 @@
 		return songSearchFilterStartsWith($songs, $searched, false);
 	}
 	
+	function songSearchMultiFilter($songs, $searched, $filters) {
+		$filter = array_shift($filters);
+		if($filter) {
+			$filteredSongs = $filter($songs, $searched);
+			if(count($filteredSongs) > 0) {
+				return $filteredSongs;
+			} else {
+				return songSearchMultiFilter($songs, $searched, $filters);
+			}
+		} else {
+			return $songs;
+		}
+	}
+	
 	function songSearchFilter($songs, $searched, $type) {
 		$filteredSong = songSearchFilterFkid($songs, $searched);
 		if($filteredSong)
@@ -285,33 +299,19 @@
 		if($filteredSong)
 			return $filteredSong;
 		
-		$filteredSongs = songSearchFilterExact($songs, $searched);
+		$filteredSongs = songSearchMultiFilter($songs, $searched,
+			array(
+				songSearchFilterExact,
+				songSearchFilterIExact,
+				songSearchFilterStartsWith,
+				songSearchFilterIStartsWith
+			)
+		);
 		if(count($filteredSongs) == 1) {
 			return $filteredSongs[0];
 		} else if(count($filteredSongs) > 1) {
 			$songs = $filteredSongs;
-		} else {
-			$filteredSongs = songSearchFilterIExact($songs, $searched);
-			if(count($filteredSongs) == 1) {
-				return $filteredSongs[0];
-			} else if(count($filteredSongs) > 1) {
-				$songs = $filteredSongs;
-			} else {
-				$filteredSongs = songSearchFilterStartsWith($songs, $searched);
-				if(count($filteredSongs) == 1) {
-					return $filteredSongs[0];
-				} else if(count($filteredSongs) > 1) {
-					$songs = $filteredSongs;
-				} else {
-					$filteredSongs = songSearchFilterIStartsWith($songs, $searched);
-					if(count($filteredSongs) == 1) {
-						return $filteredSongs[0];
-					} else if(count($filteredSongs) > 1) {
-						$songs = $filteredSongs;
-					}
-				}
-			}
-		}
+		} 
 		
 		return songSearchFilterPopularity($songs, $searched, $type);
 	}
