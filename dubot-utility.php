@@ -228,6 +228,26 @@
 		return null;
 	}
 	
+	function songSearchFilterPopularity($songs, $searched, $type) {
+		switch($type) {
+			case "youtube":
+				$mostPlays = -1;
+				return array_reduce($songs,
+					function($song1, $song2) use ($searched, &$mostPlays) {
+						$details = songDetails($song2["fkid"], "youtube")["items"][0];
+						if($details["statistics"]["viewCount"] > $mostPlays) {
+							$mostPlays = $details["statistics"]["viewCount"];
+							return $song2;
+						} else {
+							return $song1;
+						}
+					}, null
+				);
+				break;
+		}
+		return $songs[0];
+	}
+	
 	function songSearchFilterExact($songs, $searched) {
 		return array_values(array_filter($songs, function($song) use ($searched) { return strcasecmp($song["name"], $searched) == 0; }));
 	}
@@ -248,7 +268,7 @@
 			$songs = $filteredSongs;
 		}
 		
-		return $songs[0];
+		return songSearchFilterPopularity($songs, $searched, $type);
 	}
 	
 	function stupidLog($stupid) {
