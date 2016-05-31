@@ -248,8 +248,14 @@
 		return $songs[0];
 	}
 	
-	function songSearchFilterExact($songs, $searched) {
-		return array_values(array_filter($songs, function($song) use ($searched) { return strcasecmp($song["name"], $searched) == 0; }));
+	function songSearchFilterExact($songs, $searched, $case_sensitive = false) {
+		return array_values(array_filter($songs, function($song) use ($searched, $case_sensitive) {
+			if($case_sensitive) {
+				return strcmp(trim($song["name"]), trim($searched)) == 0; 
+			} else {
+				return strcasecmp(trim($song["name"]), trim($searched)) == 0; 
+			}
+		}));
 	}
 	
 	function songSearchFilter($songs, $searched, $type) {
@@ -261,11 +267,18 @@
 		if($filteredSong)
 			return $filteredSong;
 		
-		$filteredSongs = songSearchFilterExact($songs, $searched);
+		$filteredSongs = songSearchFilterExact($songs, $searched, true);
 		if(count($filteredSongs) == 1) {
 			return $filteredSongs[0];
 		} else if(count($filteredSongs) > 1) {
 			$songs = $filteredSongs;
+		} else {
+			$filteredSongs = songSearchFilterExact($songs, $searched, false);
+			if(count($filteredSongs) == 1) {
+				return $filteredSongs[0];
+			} else if(count($filteredSongs) > 1) {
+				$songs = $filteredSongs;
+			}
 		}
 		
 		return songSearchFilterPopularity($songs, $searched, $type);
